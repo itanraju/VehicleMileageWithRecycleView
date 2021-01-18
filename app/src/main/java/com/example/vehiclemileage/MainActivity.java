@@ -23,10 +23,11 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     EditText lastReserve,currentReserve,price,fuel,date;
-    TextView mileageInr,mileageKm;
-    Button calculate,viewData,delete,save;
+    TextView mileageInr,mileageKm,mileageinrLtr;
+    Button calculate,viewData,delete,save,reset;
     float getMileageLtr=0.0f;
-    float getMileageInr=0.f;
+    float getMileageInr=0.0f;
+    float getMileageinrLtr=0.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +41,33 @@ public class MainActivity extends AppCompatActivity {
         date=findViewById(R.id.date);
         mileageInr=findViewById(R.id.mileage_txt);
         mileageKm=findViewById(R.id.mileage_txt_km);
+        mileageinrLtr=findViewById(R.id.mileage_txt_inr_ltr);
         calculate=findViewById(R.id.calculate);
         viewData=findViewById(R.id.viewData);
         delete=findViewById(R.id.delete);
         save=findViewById(R.id.save);
+        reset=findViewById(R.id.reset);
 
         DbHelper db=new DbHelper(MainActivity.this);
 
         String currentDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(new Date());
         date.setText(currentDate);
+
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                lastReserve.setText(null);
+                currentReserve.setText(null);
+                price.setText(null);
+                fuel.setText(null);
+                date.setText(null);
+                mileageKm.setText("km/ltr");
+                mileageInr.setText("inr/km");
+                mileageinrLtr.setText("inr/ltr");
+
+            }
+        });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     buffer.append("Date : "+res2.getString(4)+"\n");
                     buffer.append(res2.getString(0)+" - "+res2.getString(1)+"\n");
-                    buffer.append("You Spend "+res2.getString(2)+" inr for "+res2.getString(3)+"\n");
+                    buffer.append("You Spend "+res2.getString(2)+" inr for "+res2.getString(3)+"liters fuel"+"\n");
                     buffer.append(res2.getString(5)+" km/ltr || "+res2.getString(6)+" inr/km"+"\n\n");
 
                 }
@@ -133,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     if(Integer.parseInt(sCurrentReserve)>Integer.parseInt(sLastReserve))
                     {
-                        getMileageLtr=Float.parseFloat(sLastReserve)/Float.parseFloat(sFuel);
+                        getMileageLtr=Float.parseFloat(sCurrentReserve)-Float.parseFloat(sLastReserve);
+                        getMileageLtr=getMileageLtr/Float.parseFloat(sFuel);
                         DecimalFormat df = new DecimalFormat();
                         df.setMaximumFractionDigits(2);
                         mileageInr.setText(df.format(getMileageLtr)+" km/ltr");
@@ -141,8 +161,13 @@ public class MainActivity extends AppCompatActivity {
                         getMileageInr=Float.parseFloat(sCurrentReserve)-Float.parseFloat(sLastReserve);
                         getMileageInr=Float.parseFloat(sPrice)/getMileageInr;
                         DecimalFormat df2=new DecimalFormat();
-                        df.setMaximumFractionDigits(2);
+                        df2.setMaximumFractionDigits(2);
                         mileageKm.setText(df2.format(getMileageInr)+" inr/km");
+
+                        getMileageinrLtr=Float.parseFloat(sPrice)/Float.parseFloat(sFuel);
+                        DecimalFormat df3=new DecimalFormat();
+                        df3.setMaximumFractionDigits(2);
+                        mileageinrLtr.setText(df3.format(getMileageinrLtr)+" inr/ltr");
                     }
                     else
                     {

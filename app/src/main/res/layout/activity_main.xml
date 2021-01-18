@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/price"
             android:inputType="number"
-            android:hint="Price* (km)"
+            android:hint="Total Price*"
             android:layout_margin="10dp"
             android:textAlignment="center"
             android:gravity="center_horizontal"></EditText>
@@ -86,6 +86,21 @@
             android:gravity="center"
             android:padding="12dp"
             android:text="0 km/ltr"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mileage_txt_inr_ltr"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:background="#fff2f2f2"
+            android:clickable="false"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="0 inr/ltr"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -142,6 +157,14 @@
         android:layout_gravity="center_horizontal"
         android:text="Delete All Data"
         android:id="@+id/delete"
+        ></Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Reset"
+        android:id="@+id/reset"
         ></Button>
 
 </LinearLayout>
