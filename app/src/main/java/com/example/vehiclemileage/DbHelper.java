@@ -16,7 +16,7 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table vehicleMileageDbTable (lastReserve number,currentReserve number,price number,fuel number,date text,mileageKm float,mileageInr float)");
+        db.execSQL("create table vehicleMileageDbTable (Id INTEGER PRIMARY KEY AUTOINCREMENT,lastReserve number,currentReserve number,price number,fuel number,date text,mileageKm float,mileageInr float,mileageInrLtr float)");
 
     }
 
@@ -26,7 +26,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("drop table if exists vehicleMileageDbTable");
     }
 
-    public  Boolean inserUserData(String lastReserve,String currentReserve,String price,String fuel,String date,String mileageKm,String mileageInr)
+    public  Boolean inserUserData(String lastReserve,String currentReserve,String price,String fuel,String date,String mileageKm,String mileageInr,String mileageInrLtr)
     {
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
@@ -37,6 +37,7 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put("Date",date);
         contentValues.put("MileageKm",mileageKm);
         contentValues.put("MileageInr",mileageInr);
+        contentValues.put("MileageInrLtr",mileageInrLtr);
 
         long result=db.insert("vehicleMileageDbTable",null,contentValues);
         if(result==-1)

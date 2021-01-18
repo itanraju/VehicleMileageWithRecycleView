@@ -29,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
     float getMileageInr=0.0f;
     float getMileageinrLtr=0.0f;
 
+    DbHelper db;
+    Cursor res2;
+    StringBuffer buffer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
         save=findViewById(R.id.save);
         reset=findViewById(R.id.reset);
 
-        DbHelper db=new DbHelper(MainActivity.this);
-
         String currentDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(new Date());
         date.setText(currentDate);
 
@@ -62,9 +64,13 @@ public class MainActivity extends AppCompatActivity {
                 price.setText(null);
                 fuel.setText(null);
                 date.setText(null);
-                mileageKm.setText("km/ltr");
-                mileageInr.setText("inr/km");
-                mileageinrLtr.setText("inr/ltr");
+                mileageKm.setText("0 km/ltr");
+                mileageInr.setText("0 inr/km");
+                mileageinrLtr.setText("0 inr/ltr");
+                save.setEnabled(true);
+
+                String currentDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(new Date());
+                date.setText(currentDate);
 
             }
         });
@@ -81,16 +87,26 @@ public class MainActivity extends AppCompatActivity {
 
                 String sMileageKm=String.valueOf(getMileageLtr);
                 String sMileageInr=String.valueOf(getMileageInr);
+                String sMileageInrLtr=String.valueOf(getMileageinrLtr);
 
-                Boolean checkDataInsert=db.inserUserData(sLastReserve,sCurrentReserve,sPrice,sFuel,sDate,sMileageKm,sMileageInr);
-
-                if(checkDataInsert=true)
+                if((!sLastReserve.isEmpty() && !sCurrentReserve.isEmpty() && !sPrice.isEmpty() && !sFuel.isEmpty() && !sDate.isEmpty() && !sMileageKm.isEmpty() && !sMileageInr.isEmpty() && !sMileageInrLtr.isEmpty()))
                 {
-                    Toast.makeText(MainActivity.this, "Data is inserted", Toast.LENGTH_SHORT).show();
+                    db=new DbHelper(MainActivity.this);
+                    Boolean checkDataInsert=db.inserUserData(sLastReserve,sCurrentReserve,sPrice,sFuel,sDate,sMileageKm,sMileageInr,sMileageInrLtr);
+
+                    if(checkDataInsert=true)
+                    {
+                        Toast.makeText(MainActivity.this, "Data is inserted", Toast.LENGTH_SHORT).show();
+                        save.setEnabled(false);
+                    }
+                    else
+                    {
+                        Toast.makeText(MainActivity.this, "Data not Inserted", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else
                 {
-                    Toast.makeText(MainActivity.this, "Data not Inserted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "First of all you have to calculate the mileage !!", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -108,32 +124,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-
-                Cursor res2=db.viewData();
-                if(res2.getCount()==0)
-                {
-                    Toast.makeText(MainActivity.this, "there is no entry", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                StringBuffer buffer=new StringBuffer();
-                while (res2.moveToNext())
-                {
-                    buffer.append("Date : "+res2.getString(4)+"\n");
-                    buffer.append(res2.getString(0)+" - "+res2.getString(1)+"\n");
-                    buffer.append("You Spend "+res2.getString(2)+" inr for "+res2.getString(3)+"liters fuel"+"\n");
-                    buffer.append(res2.getString(5)+" km/ltr || "+res2.getString(6)+" inr/km"+"\n\n");
-
-                }
-
-                AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
-                builder.setCancelable(true);
-                builder.setIcon(R.drawable.ic_launcher_foreground);
-                builder.setTitle("User Vehicle Mileage");
-                builder.setPositiveButton("Okey Bro !",null);
-                builder.setMessage(buffer.toString());
-                builder.show();
-
+                viewdata();
 
             }
         });
@@ -181,6 +172,41 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    private void viewdata() {
+
+        db=new DbHelper(MainActivity.this);
+
+        res2=db.viewData();
+        if(res2.getCount()==0)
+        {
+            Toast.makeText(MainActivity.this, "there is no entry", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        buffer=new StringBuffer();
+        while (res2.moveToNext())
+        {
+                    /*buffer.append(res2.getString(0)+"\n"+res2.getString(1)+"\n"+res2.getString(2)+"\n"+
+                            res2.getString(3)+"\n"+res2.getString(4)+"\n"+res2.getString(5)+"\n"+
+                            res2.getString(6)+"\n"+res2.getString(7)+"\n"+res2.getString(8));*/
+
+
+            buffer.append("Date : "+res2.getString(5)+"\n");
+            buffer.append(res2.getString(1)+" - "+res2.getString(2)+"\n");
+            buffer.append("You Spend "+res2.getString(3)+" inr for "+res2.getString(4)+" liters fuel"+"\n");
+            buffer.append(res2.getString(6)+" km/ltr || "+res2.getString(7)+" inr/km || "+res2.getString(8)+" inr/ltr"+"\n\n");
+
+        }
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+        builder.setCancelable(true);
+        builder.setIcon(R.drawable.ic_launcher_foreground);
+        builder.setTitle("User Vehicle Mileage");
+        builder.setPositiveButton("Okey Bro !",null);
+        builder.setMessage(buffer.toString());
+        builder.show();
 
     }
 }
