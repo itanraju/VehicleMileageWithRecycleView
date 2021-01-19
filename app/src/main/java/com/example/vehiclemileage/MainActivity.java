@@ -6,19 +6,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
     DbHelper db;
     Cursor res2;
     StringBuffer buffer;
+
+    List<String> listGroup;
+    List<String> listChild;
+
+    ArrayList<DbModel> arrayList;
+
+    HashMap<String, List<String>> bindingList;
+    ExpandListViewAdapter expandListViewAdapter;
+    ExpandableListView expandableListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +63,50 @@ public class MainActivity extends AppCompatActivity {
         delete=findViewById(R.id.delete);
         save=findViewById(R.id.save);
         reset=findViewById(R.id.reset);
+        expandableListView=findViewById(R.id.expandListView);
+
+        getGroupList();
+        getChildList();
+        collectionList();
+
+        expandListViewAdapter=new ExpandListViewAdapter(this,listGroup,bindingList);
+        expandableListView.setAdapter(expandListViewAdapter);
+
+        db=new DbHelper(MainActivity.this);
+
+       /* arrayList=new ArrayList<DbModel>();
+
+        arrayList.addAll(db.getAllData("25-Jan-2021"));
+
+        Log.d("array",arrayList.toString());
+
+        DbModel dbModel=new DbModel();
+        for (int i=0;i<arrayList.size();i++)
+        {
+            dbModel=arrayList.get(i);
+            dbModel.getPrice();
+            Log.d("array",dbModel.getCurrentReserve());
+
+        }*/
+
+      /*  for (int i=0;i<listGroup.size();i++)
+        {
+            res2=db.viewAllDatabyDate("19-Jan-2021");
+            if(res2.getCount()==0)
+            {
+                Toast.makeText(MainActivity.this, "there is no entry", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            buffer=new StringBuffer();
+            while (res2.moveToNext())
+            {
+                buffer.append("Date : "+res2.getString(5)+"\n");
+                buffer.append(res2.getString(1)+" - "+res2.getString(2)+"\n");
+                buffer.append("You Spend "+res2.getString(3)+" inr for "+res2.getString(4)+" liters fuel"+"\n");
+                buffer.append(res2.getString(6)+" km/ltr || "+res2.getString(7)+" inr/km || "+res2.getString(8)+" inr/ltr"+"\n\n");
+            }
+
+        }*/
 
         String currentDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(new Date());
         date.setText(currentDate);
@@ -175,6 +231,47 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void getGroupList()
+    {
+        listGroup=new ArrayList<>();
+        db=new DbHelper(MainActivity.this);
+        res2=db.viewDatabyDate();
+
+        while (res2.moveToNext())
+        {
+           listGroup.add(res2.getString(5));
+        }
+
+    }
+    private void getChildList()
+    {
+        listChild=new ArrayList<String>();
+        db=new DbHelper(MainActivity.this);
+        Log.d("group",listGroup.toString());
+
+            res2=db.viewDatabyDate();
+
+            while (res2.moveToNext()) {
+
+                listChild.add(res2.getString(1) + " - " + res2.getString(2) + "\n" +
+                        "You Spend " + res2.getString(3) + " inr for " + res2.getString(4) + " liters fuel" + "\n"
+                        + res2.getString(6) + " km/ltr || " + res2.getString(7) + " inr/km || " + res2.getString(8) + " inr/ltr");
+            }
+
+    }
+    private void collectionList()
+    {
+        bindingList=new HashMap<String, List<String>>();
+
+        Log.d("child",listChild.toString());
+        for(int i=0;i<listGroup.size();i++)
+        {
+            bindingList.put(listGroup.get(i), Collections.singletonList(listChild.get(i)));
+        }
+        Log.d("coll",bindingList.toString());
+
+    }
+
     private void viewdata() {
 
         db=new DbHelper(MainActivity.this);
@@ -188,11 +285,6 @@ public class MainActivity extends AppCompatActivity {
         buffer=new StringBuffer();
         while (res2.moveToNext())
         {
-                    /*buffer.append(res2.getString(0)+"\n"+res2.getString(1)+"\n"+res2.getString(2)+"\n"+
-                            res2.getString(3)+"\n"+res2.getString(4)+"\n"+res2.getString(5)+"\n"+
-                            res2.getString(6)+"\n"+res2.getString(7)+"\n"+res2.getString(8));*/
-
-
             buffer.append("Date : "+res2.getString(5)+"\n");
             buffer.append(res2.getString(1)+" - "+res2.getString(2)+"\n");
             buffer.append("You Spend "+res2.getString(3)+" inr for "+res2.getString(4)+" liters fuel"+"\n");
