@@ -4,21 +4,36 @@ public class DbModel {
 
     /*lastReserve number,currentReserve number,price number,fuel number,date text,mileageKm float,mileageInr float,mileageInrLtr float*/
 
-    String lastReserve,currentReserve,price,fuel,date,mileageKm,mileageInr,mileageInrLtr;
+    String id;
+    String lastReserve;
+    String currentReserve;
+    String number;
+    String fuel;
+    String price;
+    String date;
+    String mileageKm;
+    String mileageInr;
+    String mileageInrLtr;
 
-    public DbModel(String lastReserve, String currentReserve, String price, String fuel, String date, String mileageKm, String mileageInr, String mileageInrLtr) {
+    public DbModel() {
+    }
+
+    public DbModel(String id,String lastReserve, String currentReserve, String number, String fuel, String price, String date, String mileageKm, String mileageInr, String mileageInrLtr) {
+        this.id=id;
         this.lastReserve = lastReserve;
         this.currentReserve = currentReserve;
-        this.price = price;
+        this.number = number;
         this.fuel = fuel;
+        this.price = price;
         this.date = date;
         this.mileageKm = mileageKm;
         this.mileageInr = mileageInr;
         this.mileageInrLtr = mileageInrLtr;
     }
 
-    public DbModel() {
-    }
+    public String getId(){ return id; }
+
+    public void setId(String id){this.id=id;}
 
     public String getLastReserve() {
         return lastReserve;
@@ -36,12 +51,12 @@ public class DbModel {
         this.currentReserve = currentReserve;
     }
 
-    public String getPrice() {
-        return price;
+    public String getNumber() {
+        return number;
     }
 
-    public void setPrice(String price) {
-        this.price = price;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public String getFuel() {
@@ -50,6 +65,14 @@ public class DbModel {
 
     public void setFuel(String fuel) {
         this.fuel = fuel;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public String getDate() {

@@ -15,10 +15,12 @@ public class DbHelper extends SQLiteOpenHelper {
         super(context, "vehicleMileageDb", null, 1);
     }
 
+
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table vehicleMileageDbTable (Id INTEGER PRIMARY KEY AUTOINCREMENT,lastReserve number,currentReserve number,price number,fuel number,date text,mileageKm float,mileageInr float,mileageInrLtr float)");
+        db.execSQL("create table vehicleMileageDbTable (Id INTEGER PRIMARY KEY AUTOINCREMENT,lastReserve text,currentReserve text,price number,fuel text,date text,mileageKm text,mileageInr text,mileageInrLtr text)");
 
     }
 
@@ -62,23 +64,14 @@ public class DbHelper extends SQLiteOpenHelper {
     {
         SQLiteDatabase db=this.getWritableDatabase();
 
-        Cursor cursor=db.rawQuery("select * from vehicleMileageDbTable",null);
+        Cursor cursor=db.rawQuery("select * from vehicleMileageDbTable order by date desc",null);
 
         return  cursor;
     }
 
-    public Cursor viewDatabyDate()
-    {
-        SQLiteDatabase db=this.getWritableDatabase();
-
-        Cursor cursor=db.rawQuery("select * from vehicleMileageDbTable group by date",null);
-
-        return  cursor;
-    }
     public Cursor viewAllDatabyDate(String tDate)
     {
         String query="select * from vehicleMileageDbTable where date=?";
-
 
         SQLiteDatabase db=this.getWritableDatabase();
 
@@ -87,29 +80,53 @@ public class DbHelper extends SQLiteOpenHelper {
         return  cursor;
     }
 
-    public ArrayList<DbModel> getAllData(String name)
+    public  Boolean deleteUserData(String id)
+    {
+        SQLiteDatabase db=this.getWritableDatabase();
+
+        Cursor cursor=db.rawQuery("select * from vehicleMileageDbTable where Id=?",new String[]{id});
+        if(cursor.getCount()>0)
+        {
+            long result=db.delete("vehicleMileageDbTable","Id=?",new String[]{id});
+            if(result==-1)
+            {
+                return  false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+        else {
+            return false;
+        }}
+
+
+
+
+    public ArrayList<DbModel> getAllData(String date)
     {
         String query="select * from vehicleMileageDbTable where date=?";
         ArrayList<DbModel> dbList=new ArrayList<>();
 
         SQLiteDatabase db=this.getReadableDatabase();
 
-        Cursor cursor=db.rawQuery(query,new String[]{name});
+        Cursor cursor=db.rawQuery(query,new String[]{date});
+
+        DbModel obj=new DbModel();
 
         if(cursor.moveToFirst())
         {
-            /*lastReserve number,currentReserve number,price number,fuel number,date text,mileageKm float,mileageInr float,mileageInrLtr float*/
-
             do{
-                DbModel obj=new DbModel();
                 obj.setLastReserve(cursor.getString(cursor.getColumnIndex("lastReserve")));
-                obj.setLastReserve(cursor.getString(cursor.getColumnIndex("currentReserve")));
-                obj.setLastReserve(cursor.getString(cursor.getColumnIndex("price")));
-                obj.setLastReserve(cursor.getString(cursor.getColumnIndex("fuel")));
-                obj.setLastReserve(cursor.getString(cursor.getColumnIndex("date")));
-                obj.setLastReserve(cursor.getString(cursor.getColumnIndex("mileageKm")));
-                obj.setLastReserve(cursor.getString(cursor.getColumnIndex("mileageInr")));
-                obj.setLastReserve(cursor.getString(cursor.getColumnIndex("mileageInrLtr")));
+                obj.setCurrentReserve(cursor.getString(cursor.getColumnIndex("currentReserve")));
+                obj.setPrice(cursor.getString(cursor.getColumnIndex("price")));
+                obj.setFuel(cursor.getString(cursor.getColumnIndex("fuel")));
+                obj.setDate(cursor.getString(cursor.getColumnIndex("date")));
+                obj.setMileageKm(cursor.getString(cursor.getColumnIndex("mileageKm")));
+                obj.setMileageInr(cursor.getString(cursor.getColumnIndex("mileageInr")));
+                obj.setMileageInrLtr(cursor.getString(cursor.getColumnIndex("mileageInrLtr")));
 
                 dbList.add(obj);
             }

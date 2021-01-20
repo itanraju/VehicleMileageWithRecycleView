@@ -3,6 +3,7 @@ package com.example.vehiclemileage;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     float getMileageInr=0.0f;
     float getMileageinrLtr=0.0f;
 
+    String DTmileageKm,DTmileageInr,DTmileageInrLtr;
+
     DbHelper db;
     Cursor res2;
     StringBuffer buffer;
@@ -42,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<DbModel> arrayList;
 
     HashMap<String, List<String>> bindingList;
-    ExpandListViewAdapter expandListViewAdapter;
+
     ExpandableListView expandableListView;
 
     @Override
@@ -63,53 +66,23 @@ public class MainActivity extends AppCompatActivity {
         delete=findViewById(R.id.delete);
         save=findViewById(R.id.save);
         reset=findViewById(R.id.reset);
-        expandableListView=findViewById(R.id.expandListView);
 
-        getGroupList();
-        getChildList();
-        collectionList();
+       /* getGroupList();
+        getChildList();*/
+        /*collectionList();*/
 
-        expandListViewAdapter=new ExpandListViewAdapter(this,listGroup,bindingList);
-        expandableListView.setAdapter(expandListViewAdapter);
 
         db=new DbHelper(MainActivity.this);
 
-       /* arrayList=new ArrayList<DbModel>();
-
-        arrayList.addAll(db.getAllData("25-Jan-2021"));
-
-        Log.d("array",arrayList.toString());
-
-        DbModel dbModel=new DbModel();
-        for (int i=0;i<arrayList.size();i++)
-        {
-            dbModel=arrayList.get(i);
-            dbModel.getPrice();
-            Log.d("array",dbModel.getCurrentReserve());
-
-        }*/
-
-      /*  for (int i=0;i<listGroup.size();i++)
-        {
-            res2=db.viewAllDatabyDate("19-Jan-2021");
-            if(res2.getCount()==0)
-            {
-                Toast.makeText(MainActivity.this, "there is no entry", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            buffer=new StringBuffer();
-            while (res2.moveToNext())
-            {
-                buffer.append("Date : "+res2.getString(5)+"\n");
-                buffer.append(res2.getString(1)+" - "+res2.getString(2)+"\n");
-                buffer.append("You Spend "+res2.getString(3)+" inr for "+res2.getString(4)+" liters fuel"+"\n");
-                buffer.append(res2.getString(6)+" km/ltr || "+res2.getString(7)+" inr/km || "+res2.getString(8)+" inr/ltr"+"\n\n");
-            }
-
-        }*/
 
         String currentDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault()).format(new Date());
         date.setText(currentDate);
+
+
+        db=new DbHelper(MainActivity.this);
+
+
+
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 if((!sLastReserve.isEmpty() && !sCurrentReserve.isEmpty() && !sPrice.isEmpty() && !sFuel.isEmpty() && !sDate.isEmpty() && !sMileageKm.isEmpty() && !sMileageInr.isEmpty() && !sMileageInrLtr.isEmpty()))
                 {
                     db=new DbHelper(MainActivity.this);
-                    Boolean checkDataInsert=db.inserUserData(sLastReserve,sCurrentReserve,sPrice,sFuel,sDate,sMileageKm,sMileageInr,sMileageInrLtr);
+                    Boolean checkDataInsert=db.inserUserData(sLastReserve,sCurrentReserve,sPrice,sFuel,sDate,DTmileageKm,DTmileageInr,DTmileageInrLtr);
 
                     if(checkDataInsert=true)
                     {
@@ -199,22 +172,28 @@ public class MainActivity extends AppCompatActivity {
                 {
                     if(Integer.parseInt(sCurrentReserve)>Integer.parseInt(sLastReserve))
                     {
+                        save.setEnabled(true);
+
                         getMileageLtr=Float.parseFloat(sCurrentReserve)-Float.parseFloat(sLastReserve);
                         getMileageLtr=getMileageLtr/Float.parseFloat(sFuel);
                         DecimalFormat df = new DecimalFormat();
                         df.setMaximumFractionDigits(2);
                         mileageInr.setText(df.format(getMileageLtr)+" km/ltr");
+                        DTmileageKm=df.format(getMileageLtr);
+
 
                         getMileageInr=Float.parseFloat(sCurrentReserve)-Float.parseFloat(sLastReserve);
                         getMileageInr=Float.parseFloat(sPrice)/getMileageInr;
                         DecimalFormat df2=new DecimalFormat();
                         df2.setMaximumFractionDigits(2);
                         mileageKm.setText(df2.format(getMileageInr)+" inr/km");
+                        DTmileageInr=df2.format(getMileageInr);
 
                         getMileageinrLtr=Float.parseFloat(sPrice)/Float.parseFloat(sFuel);
                         DecimalFormat df3=new DecimalFormat();
                         df3.setMaximumFractionDigits(2);
                         mileageinrLtr.setText(df3.format(getMileageinrLtr)+" inr/ltr");
+                        DTmileageInrLtr=df3.format(getMileageinrLtr);
                     }
                     else
                     {
@@ -231,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getGroupList()
+  /*  private void getGroupList()
     {
         listGroup=new ArrayList<>();
         db=new DbHelper(MainActivity.this);
@@ -242,8 +221,8 @@ public class MainActivity extends AppCompatActivity {
            listGroup.add(res2.getString(5));
         }
 
-    }
-    private void getChildList()
+    }*/
+   /* private void getChildList()
     {
         listChild=new ArrayList<String>();
         db=new DbHelper(MainActivity.this);
@@ -258,8 +237,8 @@ public class MainActivity extends AppCompatActivity {
                         + res2.getString(6) + " km/ltr || " + res2.getString(7) + " inr/km || " + res2.getString(8) + " inr/ltr");
             }
 
-    }
-    private void collectionList()
+    }*/
+   /* private void collectionList()
     {
         bindingList=new HashMap<String, List<String>>();
 
@@ -271,18 +250,22 @@ public class MainActivity extends AppCompatActivity {
         Log.d("coll",bindingList.toString());
 
     }
-
+*/
     private void viewdata() {
 
-        db=new DbHelper(MainActivity.this);
+        Intent i=new Intent(MainActivity.this,ViewAllData.class);
+        startActivity(i);
+       /* db=new DbHelper(MainActivity.this);
 
-        res2=db.viewData();
+        res2=db.viewAllDatabyDate("19-Jan-2021");
         if(res2.getCount()==0)
         {
             Toast.makeText(MainActivity.this, "there is no entry", Toast.LENGTH_SHORT).show();
             return;
         }
         buffer=new StringBuffer();
+        DbModel dbModel=new DbModel();
+        arrayList=new ArrayList<>();
         while (res2.moveToNext())
         {
             buffer.append("Date : "+res2.getString(5)+"\n");
@@ -290,15 +273,30 @@ public class MainActivity extends AppCompatActivity {
             buffer.append("You Spend "+res2.getString(3)+" inr for "+res2.getString(4)+" liters fuel"+"\n");
             buffer.append(res2.getString(6)+" km/ltr || "+res2.getString(7)+" inr/km || "+res2.getString(8)+" inr/ltr"+"\n\n");
 
+            dbModel.setLastReserve(res2.getString(1));
+            dbModel.setCurrentReserve(res2.getString(2));
+            dbModel.setPrice(res2.getString(3));
+            dbModel.setFuel(res2.getString(4));
+            dbModel.setDate(res2.getString(5));
+            dbModel.setMileageKm(res2.getString(6));
+            dbModel.setMileageInr(res2.getString(7));
+            dbModel.setMileageInrLtr(res2.getString(8));
+
+            arrayList.add(dbModel);
         }
 
-        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+        for (int i=0;i<arrayList.size();i++)
+        {
+
+            Log.d("price",arrayList.get(i).getPrice());
+        }*/
+
+      /*  AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
         builder.setCancelable(true);
         builder.setIcon(R.drawable.ic_launcher_foreground);
         builder.setTitle("User Vehicle Mileage");
         builder.setPositiveButton("Okey Bro !",null);
         builder.setMessage(buffer.toString());
-        builder.show();
-
+        builder.show();*/
     }
 }
